@@ -7,6 +7,12 @@ const CELL_SIZE = 20
 const CELL_GAP = 2
 
 export default class Grid {
+    // setting private variables outside of constructor
+    // setting private variables make it easier to work with
+    // prevent accidental overwrite all the cells or call of the whole cells 
+    // cell object is not directly accessible
+    #cells
+
     constructor(gridElement) {
         // setProperty with string interpolation to convert to vmin values
         gridElement.style.setProperty("--grid-size", GRID_SIZE)
@@ -14,7 +20,57 @@ export default class Grid {
         gridElement.style.setProperty("--cell-gap", `${CELL_GAP}vmin`)
 
         // create cells according to grid_size
-        createCellElements(gridElement)
+        // take in the index of the array to use to map x, y values 
+        // x values can be taken via taking modulus of the index
+        // y values can be taken via taking division of the index and flooring it to get an integer
+        // # sign to declare private variables
+        this.#cells = createCellElements(gridElement).map((cellElement, index) => {
+            return new Cell(cellElement, index % GRID_SIZE, Math.floor(index / GRID_SIZE))
+        })
+        // inspect to see the respective x, y values to check if it's correct
+        console.log(this.cells)
+    }
+
+    // setting a private getter function to get all the empty cells
+    get #emptyCells() {
+        return this.#cells.filter(cell => cell.tile == null)
+    }
+
+    // Math.random return 0 to 1 
+    // multiply length of empty cells
+    // get random index of cells that are empty
+    randomEmptyCell() {
+        const randomIndex = Math.floor(Math.random() * this.#emptyCells.length)
+        return this.#emptyCells[randomIndex]
+
+    }
+}
+
+class Cell {
+    #cellElement
+    #x
+    #y
+    #tile
+
+    constructor(cellElement, x, y) {
+        this.#cellElement = cellElement
+        this.#x = x
+        this.#y = y
+    }
+
+    get tile() {
+        return this.#tile
+    }
+
+    set tile(value) {
+        this.#tile = value
+        if (value == null) return
+
+        // if tile has value (x & y position), we want to assign it to the cell value for x & y
+        // telling the tile that it has move to the new x and y position
+        // handle by tile class
+        this.#tile.x = this.#x
+        this.#tile.y = this.#y
     }
 }
 
