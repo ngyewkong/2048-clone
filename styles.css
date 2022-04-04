@@ -40,10 +40,14 @@ body {
 
 /* using css maths to handle the position of the tile */
 .tile {
+  /* variables handled by js */
+  /*
   --x: 0;
   --y: 3;
-  --background-lightness: 20%;
-  --text-lightness: 80%;
+  --background-lightness: 80%;
+  --text-lightness: 20%;
+  */
+
   position: absolute;
   display: flex;
   justify-content: center;
@@ -58,4 +62,16 @@ body {
   font-weight: bold;
   background-color: hsl(200, 50%, var(--background-lightness));
   color: hsl(200, 25%, var(--text-lightness));
+  animation: show 200ms ease-in-out;
+  /* set the animation to run smoothly with transition when x and y values change */
+  transition: 100ms ease-in-out;
+}
+
+/* setting up animation keyframe */
+/* scale 0 set the animation for the tile to pop out */
+@keyframes show {
+  0% {
+    opacity: 0.5;
+    transform: scale(0);
+  }
 }
