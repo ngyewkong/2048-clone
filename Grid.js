@@ -31,6 +31,13 @@ export default class Grid {
         console.log(this.cells)
     }
 
+    // getter function to get cells by column
+    get cellsByColumn() {
+        return this.#cells.reduce((cellGrid, cell) => {
+            cellGrid[cell.x] = cellGrid[cell.x]
+        })
+    }
+
     // setting a private getter function to get all the empty cells
     get #emptyCells() {
         return this.#cells.filter(cell => cell.tile == null)
