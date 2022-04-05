@@ -17,6 +17,7 @@ grid.randomEmptyCell().tile = new Tile(gameBoard)
 
 // call setupInput function
 setupInput()
+console.log(grid.cellsByColumn)
 
 // handle user inputs
 function setupInput() {
@@ -61,4 +62,31 @@ function moveUp() {
     // check by columns for up & down 
     // so that we can check what the value of each tile before merging
     slideTiles(grid.cellsByColumn)
+}
+
+function slideTiles(cells) {
+    cells.forEach(group => {
+        // loop through the full group
+        // i = 1 as i = 0 cannot move (top cell alr)
+        for (let i = 1; i < group.length; i++) {
+            const cell = group[i]
+            let lastValidCell
+            // go through the remaining tiles in this column
+            // to check if merge can happen
+            for (let j = i - 1; j >= 0; j--) {
+                const moveToCell = group[j]
+                // if cannot move, exit
+                if (!moveToCell.canAccept(cell.title)) break
+                lastValidCell = moveToCell
+            }
+            if (lastValidCell != null) {
+                if (lastValidCell.tile != null) {
+                    lastValidCell.mergeTile = cell.tile
+                } else {
+                    lastValidCell.tile = cell.tile
+                }
+                cell.tile = null
+            }
+        }
+    })
 }

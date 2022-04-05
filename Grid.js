@@ -34,8 +34,13 @@ export default class Grid {
     // getter function to get cells by column
     get cellsByColumn() {
         return this.#cells.reduce((cellGrid, cell) => {
-            cellGrid[cell.x] = cellGrid[cell.x]
-        })
+            // create an array of array
+            // cell.x represent row
+            // cell.y represent column
+            cellGrid[cell.x] = cellGrid[cell.x] || []
+            cellGrid[cell.x][cell.y] = cell
+            return cellGrid
+        }, [])
     }
 
     // setting a private getter function to get all the empty cells
@@ -65,6 +70,15 @@ class Cell {
         this.#y = y
     }
 
+    // getter function for x & y
+    get x() {
+        return this.#x
+    }
+
+    get y() {
+        return this.#y
+    }
+
     get tile() {
         return this.#tile
     }
@@ -78,6 +92,11 @@ class Cell {
         // handle by tile class
         this.#tile.x = this.#x
         this.#tile.y = this.#y
+    }
+
+    canAccept(tile) {
+        // make sense only one merge happen at the same level
+        return (this.tile == null || (this.mergeTile == null && this.tile.value === tile.value))
     }
 }
 
