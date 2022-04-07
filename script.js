@@ -26,24 +26,47 @@ function setupInput() {
     window.addEventListener("keydown", handleInput, {once: true})
 }
 
-function handleInput(e) {
+// animation not working as intended
+// as the calls for move up down left right 
+// not waiting for the slideTiles function to carry out the animations
+// use await and async
+// wait for the function to finish before calling the grid.cells.forEach code line
+async function handleInput(e) {
     console.log(e.key)
     switch (e.key) {
         // the cases are the key names for the arrow keys
         case "ArrowUp":
-            moveUp()
+            // handle for when movement is not allowed 
+            // should not generate new tile
+            if (!canMoveUp()) {
+                setupInput()
+                return
+            }
+            await moveUp()
             break
 
         case "ArrowDown":
-            moveDown()
+            if (!canMoveDown()) {
+                setupInput()
+                return
+            }
+            await moveDown()
             break
 
         case "ArrowLeft":
-            moveLeft()
+            if (!canMoveLeft()) {
+                setupInput()
+                return
+            }
+            await moveLeft()
             break
 
         case "ArrowRight":
-            moveRight()
+            if (!canMoveRight()) {
+                setupInput()
+                return
+            }
+            await moveRight()
             break
         default:
             // default only happens when no valid user input is happening
@@ -54,6 +77,27 @@ function handleInput(e) {
     }
 
     // other code to add in new tiles
+    // handle the merged part
+    // cell is private variable need getter function
+    grid.cells.forEach(cell => cell.mergeTiles())
+
+    // handle addition of new tiles after movement
+    // new tile inside the gameboard
+    const newTile = new Tile(gameBoard)
+    
+    // set a random empty cell in the gameboard to the new tile generated
+    grid.randomEmptyCell().tile = newTile
+
+    // loose check for if cannot move tile -> end game
+    if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
+        // waitForTransition() animation parameter is false by default
+        newTile.waitForTransition(true).then(() => {
+            // when animation of the tile finish appearing
+            // return alert window to signal end of game 
+            alert("You Lose.")
+        })
+        return 
+    }
 
     setupInput()
 }
@@ -64,22 +108,59 @@ function moveUp() {
     slideTiles(grid.cellsByColumn)
 }
 
+function moveDown() {
+    // check by columns for up & down 
+    // so that we can check what the value of each tile before merging
+    // but for down need to reverse the cellsByColumn
+    // using map & spread operator to create a new array and reverse
+    // do not want to touch the underlying array
+    slideTiles(grid.cellsByColumn.map(column => [...column].reverse()))
+}
+
+function moveLeft() {
+    // check by rows for left 
+    // so that we can check what the value of each tile before merging
+    slideTiles(grid.cellsByRow)
+}
+
+function moveRight() {
+    // check by rows for up & down 
+    // so that we can check what the value of each tile before merging
+    slideTiles(grid.cellsByRow.map(row => [...row].reverse()))
+}
+
+// need to use Promises to get the await to work 
+// Promises.all
 function slideTiles(cells) {
-    cells.forEach(group => {
+    return Promise.all(
+        // instead of forEach need to use flatMap
+        // flatMap works like map
+        // but flatten out the result into 1 dimensional array instead of multi-dimensional
+    cells.flatMap(group => {
+        // set up promises as empty array
+        const promises = []
         // loop through the full group
         // i = 1 as i = 0 cannot move (top cell alr)
         for (let i = 1; i < group.length; i++) {
             const cell = group[i]
+
+            // check if the cell we are on is null
+            // if null then continue and ignore the bottom code
+            if (cell.tile == null) continue
+
             let lastValidCell
             // go through the remaining tiles in this column
             // to check if merge can happen
             for (let j = i - 1; j >= 0; j--) {
                 const moveToCell = group[j]
                 // if cannot move, exit
-                if (!moveToCell.canAccept(cell.title)) break
+                if (!moveToCell.canAccept(cell.tile)) break
                 lastValidCell = moveToCell
             }
             if (lastValidCell != null) {
+                // add to promises everytime there is a tile that can move
+                // add a promise that ask to wait for the animation to finish
+                promises.push(cell.tile.waitForTransition())
                 if (lastValidCell.tile != null) {
                     lastValidCell.mergeTile = cell.tile
                 } else {
@@ -88,5 +169,41 @@ function slideTiles(cells) {
                 cell.tile = null
             }
         }
+        // return the promises array here
+        return promises 
+    }))
+}
+
+function canMoveUp() {
+    return canMove(grid.cellsByColumn)
+}
+
+function canMoveDown() {
+    return canMove(grid.cellsByColumn.map(column => [...column].reverse()))
+}
+
+function canMoveLeft() {
+    return canMove(grid.cellsByRow)
+}
+
+function canMoveRight() {
+    return canMove(grid.cellsByRow.map(row => [...row].reverse()))
+}
+
+function canMove(cells) {
+    // return a column
+    return cells.some(group => {
+        return group.some((cell, index) => {
+            // check if any cell can move
+            // return false if the cell index is 0 (at the top already)
+            // return false is cell is empty
+            if (index === 0) return false
+            if (cell.tile == null) return false
+
+            // check if the cell directly above can accept the cell
+            const moveToCell = group[index - 1]
+            //return true if the above cell can accept
+            return moveToCell.canAccept(cell.tile)
+        })
     })
 }

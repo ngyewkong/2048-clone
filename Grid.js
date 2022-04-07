@@ -31,6 +31,11 @@ export default class Grid {
         console.log(this.cells)
     }
 
+    // getter for cells
+    get cells() {
+        return this.#cells
+    }
+
     // getter function to get cells by column
     get cellsByColumn() {
         return this.#cells.reduce((cellGrid, cell) => {
@@ -43,6 +48,18 @@ export default class Grid {
         }, [])
     }
 
+    // getter function to get cells by row
+    get cellsByRow() {
+        return this.#cells.reduce((cellGrid, cell) => {
+            // create an array of array
+            // cell.x represent row
+            // cell.y represent column
+            // similar to cellsByColumn just swopping the x & y places to get cellsByRow
+            cellGrid[cell.y] = cellGrid[cell.y] || []
+            cellGrid[cell.y][cell.x] = cell
+            return cellGrid
+        }, [])
+    }
     // setting a private getter function to get all the empty cells
     get #emptyCells() {
         return this.#cells.filter(cell => cell.tile == null)
@@ -63,6 +80,7 @@ class Cell {
     #x
     #y
     #tile
+    #mergeTile
 
     constructor(cellElement, x, y) {
         this.#cellElement = cellElement
@@ -94,9 +112,39 @@ class Cell {
         this.#tile.y = this.#y
     }
 
+    get mergeTile() {
+        return this.#mergeTile
+    }
+
+    set mergeTile(value) {
+        this.#mergeTile = value
+        if (value == null) return
+
+        // if value is not null 
+        // for animations to work as intended same as set tile()
+        this.#mergeTile.x = this.#x
+        this.#mergeTile.y = this.#y
+    }
+
     canAccept(tile) {
         // make sense only one merge happen at the same level
-        return (this.tile == null || (this.mergeTile == null && this.tile.value === tile.value))
+        // means if after 4 4 merge to become 8 and the nearest tile is also 8 
+        // it wont directly meerge in the same level
+        return (
+            this.tile == null || 
+            (this.mergeTile == null && this.tile.value === tile.value)
+        )
+    }
+
+    mergeTiles() {
+        // check if the tile exists or merge tile exists
+        if (this.tile == null || this.mergeTile == null) return
+        // if they both exists -> can merge
+        // add the values of the current tile and merge tile 
+        this.tile.value = this.tile.value + this.mergeTile.value
+        // remove the merge tile and set the merge tile to null
+        this.mergeTile.remove()
+        this.mergeTile = null
     }
 }
 
