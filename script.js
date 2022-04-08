@@ -95,13 +95,25 @@ async function handleInput(e) {
         newTile.waitForTransition(true).then(() => {
             // when animation of the tile finish appearing
             // return alert window to signal end of game 
-            alert("You Lose.")
+            // alert("You Lose.")
+
+            popupAlert("You ran out of moves. You lose. Click okay to start a new game.")
         })
         return 
     }
+    function popupAlert(msg) {
+        if (confirm(msg)) {
+            console.log("refreshing...")
+            window.location.reload() 
 
-    // handle win condition (2048)
-    let text = document.querySelectorAll("div.cell").text
+        } else {
+            console.log("exiting popup...")
+        }
+    }
+    // handle win condition (2048) 
+    grid.cells.forEach(cell => {
+        console.log(cell.tile)
+    })
 
     setupInput()
 }
