@@ -7,7 +7,7 @@
 
 html,
 body {
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
 }
 
 /* use vmin so that it will scale as page size changes */
