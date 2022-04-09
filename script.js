@@ -101,19 +101,6 @@ async function handleInput(e) {
         })
         return 
     }
-    function popupAlert(msg) {
-        if (confirm(msg)) {
-            console.log("refreshing...")
-            window.location.reload() 
-
-        } else {
-            console.log("exiting popup...")
-        }
-    }
-    // handle win condition (2048) 
-    grid.cells.forEach(cell => {
-        console.log(cell.tile)
-    })
 
     setupInput()
 }
@@ -162,7 +149,11 @@ async function handleMobileInput(e) {
   
     if (!canMoveUp() && !canMoveDown() && !canMoveLeft() && !canMoveRight()) {
       newTile.waitForTransition(true).then(() => {
-        alert("Game Over!\nRefresh the page for a new one!");
+        // when animation of the tile finish appearing
+        // return alert window to signal end of game 
+        // alert("You Lose.")
+
+        popupAlert("You ran out of moves. You lose. Click okay to start a new game.")
       });
       return;
     }
@@ -274,4 +265,14 @@ function canMove(cells) {
             return moveToCell.canAccept(cell.tile)
         })
     })
+}
+
+function popupAlert(msg) {
+    if (confirm(msg)) {
+        console.log("refreshing...")
+        window.location.reload() 
+
+    } else {
+        console.log("exiting popup...")
+    }
 }
