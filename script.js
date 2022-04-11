@@ -1,5 +1,4 @@
 // treating grid, cell, tile as individual classes/components
-
 import Grid from "./Grid.js"
 import Tile from "./Tile.js"
 
@@ -97,9 +96,24 @@ async function handleInput(e) {
             // return alert window to signal end of game 
             // alert("You Lose.")
 
-            popupAlert("You ran out of moves. You lose. Click okay to start a new game.")
+            popupAlert("You ran out of moves! You lose! Click Okay to start a new game.")
         })
         return 
+    }
+
+    // loose check for win condition
+    let winningCondition = false
+    winTile()
+
+    function winTile() {
+        const checkTiles = document.getElementsByClassName("tile")
+        for (let i = 0; i < checkTiles.length; i++) {
+            console.log(checkTiles[i].textContent)
+            if (checkTiles[i].textContent === "2048") {
+                winningCondition = true
+                popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
+            }
+        }
     }
 
     setupInput()
