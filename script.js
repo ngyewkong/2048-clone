@@ -102,7 +102,20 @@ async function handleInput(e) {
     }
 
     // loose check for win condition
-    winTile()
+    const checkTiles = document.getElementsByClassName("tile")
+    let winningCondition = false
+        
+    for (let i = 0; i < checkTiles.length; i++) {
+        console.log(checkTiles[i].textContent)
+        if (checkTiles[i].textContent === "2048") {
+            winningCondition = true
+        
+            // waitForTransition() animation parameter is false by default
+            newTile.waitForTransition(winningCondition).then(() => {
+                popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
+            })
+        }}
+        console.log(winningCondition)
 
     setupInput()
 }
@@ -161,7 +174,20 @@ async function handleMobileInput(e) {
     }
 
     // loose check for win condition
-    winTile()
+    const checkTiles = document.getElementsByClassName("tile")
+    let winningCondition = false
+        
+    for (let i = 0; i < checkTiles.length; i++) {
+        console.log(checkTiles[i].textContent)
+        if (checkTiles[i].textContent === "2048") {
+            winningCondition = true
+
+            // waitForTransition() animation parameter is false by default
+            newTile.waitForTransition(winningCondition).then(() => {
+                popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
+            })
+        }}
+        console.log(winningCondition)
   
     setupInput();
   }
@@ -279,17 +305,5 @@ function popupAlert(msg) {
 
     } else {
         console.log("exiting popup...")
-    }
-}
-
-function winTile() {
-    const checkTiles = document.getElementsByClassName("tile")
-    let winningCondition = false
-    for (let i = 0; i < checkTiles.length; i++) {
-        console.log(checkTiles[i].textContent)
-        if (checkTiles[i].textContent === "2048") {
-            winningCondition = true
-            popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
-        }
     }
 }
