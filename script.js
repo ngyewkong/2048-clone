@@ -114,6 +114,7 @@ async function handleInput(e) {
             newTile.waitForTransition(winningCondition).then(() => {
                 popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
             })
+            window.removeEventListener("keydown")
         }}
         console.log(winningCondition)
 
@@ -186,6 +187,7 @@ async function handleMobileInput(e) {
             newTile.waitForTransition(winningCondition).then(() => {
                 popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
             })
+            window.removeEventListener("swiped")
         }}
         console.log(winningCondition)
   
