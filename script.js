@@ -102,19 +102,7 @@ async function handleInput(e) {
     }
 
     // loose check for win condition
-    let winningCondition = false
     winTile()
-
-    function winTile() {
-        const checkTiles = document.getElementsByClassName("tile")
-        for (let i = 0; i < checkTiles.length; i++) {
-            console.log(checkTiles[i].textContent)
-            if (checkTiles[i].textContent === "2048") {
-                winningCondition = true
-                popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
-            }
-        }
-    }
 
     setupInput()
 }
@@ -171,6 +159,9 @@ async function handleMobileInput(e) {
       });
       return;
     }
+
+    // loose check for win condition
+    winTile()
   
     setupInput();
   }
@@ -288,5 +279,17 @@ function popupAlert(msg) {
 
     } else {
         console.log("exiting popup...")
+    }
+}
+
+function winTile() {
+    const checkTiles = document.getElementsByClassName("tile")
+    let winningCondition = false
+    for (let i = 0; i < checkTiles.length; i++) {
+        console.log(checkTiles[i].textContent)
+        if (checkTiles[i].textContent === "2048") {
+            winningCondition = true
+            popupAlert("Congratulations for hitting 2048! You Win! Click Okay to start a new game.")
+        }
     }
 }
